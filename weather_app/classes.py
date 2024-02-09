@@ -1,3 +1,4 @@
+import datetime
 from dataclasses import dataclass
 from typing import Any
 
@@ -25,7 +26,7 @@ class Weather:
 
 @dataclass(slots=True)
 class WeatherData:
-    dt: int
+    date_time: datetime.datetime
     main: Main
     weather: list[Weather]
     clouds: dict[str, Any]
@@ -33,18 +34,18 @@ class WeatherData:
     visibility: int
     pop: float
     sys: dict[str, Any]
-    date_time: str
+    date_time_text: str
 
     def __init__(self, weather_data: dict[str, Any]):
-        self.dt = weather_data["dt"]
-        self.main = Main(*weather_data["main"])
-        self.weather = [Weather(*weather) for weather in weather_data["weather"]]
+        self.date_time = datetime.datetime.fromtimestamp(weather_data["dt"])
+        self.main = Main(*weather_data["main"].values())
+        self.weather = [Weather(*weather.values()) for weather in weather_data["weather"]]
         self.clouds = weather_data["clouds"]
         self.wind = weather_data["wind"]
         self.visibility = weather_data["visibility"]
         self.pop = weather_data["pop"]
         self.sys = weather_data["sys"]
-        self.date_time = weather_data["dt_txt"]
+        self.date_time_text = weather_data["dt_txt"]
 
 
 @dataclass(slots=True)
@@ -72,4 +73,4 @@ class ApiResponse:
         self.message = api_response["message"]
         self.count = api_response["cnt"]
         self.weather_list = [WeatherData(weather) for weather in api_response["list"]]
-        self.city = City(*api_response["city"])
+        self.city = City(*api_response["city"].values())
