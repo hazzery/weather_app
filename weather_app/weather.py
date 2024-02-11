@@ -1,18 +1,45 @@
 import datetime
 
-from weather_app.classes import WeatherData
+from weather_app.request_forecast import request_forecast
+from weather_app.get_coordinates import get_coordinates
+from weather_app.classes import WeatherData, City
 
 
-def daily_forecasts(weather_data: list[WeatherData]) -> dict[datetime.date, list[WeatherData]]:
-    """This function will take the weather data and return a dictionary of daily forecasts.
+WeatherForecast = tuple[datetime.time, float, float, float, float]
 
-    :return:
+
+def transform_forecasts(
+        weather_data: list[WeatherData]
+) -> dict[datetime.date, list[WeatherForecast]]:
+    """Map each day to all forecasts for that day.
+
+    :param weather_data: A list of weather forecasts.
+    :return: A dictionary mapping dates to a list of forecasts for that day.
     """
-    forecasts: dict[datetime.date, list[WeatherData]] = {}
-    for forcast in weather_data:
-        date = forcast.date_time.date()
+    forecasts = {}
+    for forecast in weather_data:
+        date = forecast.date_time.date()
         if date not in forecasts:
             forecasts[date] = []
-        forecasts[date].append(forcast)
+        forecasts[date].append((
+            forecast.date_time.time(),
+            forecast.main.temp,
+            forecast.main.feels_like,
+            forecast.main.temp_max,
+            forecast.main.temp_min
+        ))
 
     return forecasts
+
+
+def get_weather_data(
+        location_name: str
+) -> tuple[City, dict[datetime.date, list[WeatherForecast]]]:
+    """Request the weather at ``location_name``.
+
+    :param location_name: The name of the location to get the weather data for.
+    :return: A list of weather data.
+    """
+    coordinates = get_coordinates(location_name)
+    forecast = request_forecast(*coordinates)
+    return forecast.city, transform_forecasts(forecast.weather_list)
