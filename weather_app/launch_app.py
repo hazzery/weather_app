@@ -2,23 +2,41 @@ from tkinter import ttk
 import tkinter
 
 from .classes import ApiResponse
-from .weather import daily_forecasts
+from .weather import transform_forecasts, get_weather_data
 from .weather_widget import WeatherTable
 
 
-def launch_app(weather_data: ApiResponse) -> None:
+def launch_app() -> None:
     root = tkinter.Tk()
-    root.geometry('600x900')
     root.title('Weather App')
 
-    header = ttk.Label(
-        root, text=weather_data.city.name + " Weather", font=("Arial", 20)
-    )
-    header.pack()
+    starting_frame = ttk.Frame(root)
+    starting_frame.pack(pady=10, padx=10)
 
-    forecasts = daily_forecasts(weather_data.weather_list)
+    ttk.Label(
+        starting_frame,
+        text='Weather App',
+        font=('Arial', 20)
+    ).pack(pady=10, padx=10)
 
-    weather_table = WeatherTable(root, forecasts)
-    weather_table.pack()
+    ttk.Label(
+        starting_frame,
+        text='Enter a place name:',
+        font=('Arial', 12)
+    ).pack(pady=10, padx=10)
+
+    location_input = ttk.Entry(starting_frame, width=30)
+    location_input.pack(pady=10, padx=10)
+
+    def go(location_name: str) -> None:
+        starting_frame.destroy()
+        city, weather_data = get_weather_data(location_name)
+        WeatherTable(root, city, weather_data).pack()
+
+    ttk.Button(
+        starting_frame,
+        text='Go',
+        command=lambda: go(location_input.get())
+    ).pack(pady=10, padx=10)
 
     root.mainloop()
