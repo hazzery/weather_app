@@ -1,9 +1,8 @@
 from tkinter import ttk
 import tkinter
 
-from .classes import ApiResponse
-from .weather import transform_forecasts, get_weather_data
 from .weather_widget import WeatherTable
+from .weather import get_weather_data
 
 
 def launch_app() -> None:

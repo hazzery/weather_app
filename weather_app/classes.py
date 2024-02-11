@@ -1,6 +1,6 @@
-import datetime
 from dataclasses import dataclass
 from typing import Any
+import datetime
 
 
 @dataclass(slots=True)

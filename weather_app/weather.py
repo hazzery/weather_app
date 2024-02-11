@@ -1,8 +1,8 @@
 import datetime
 
-from weather_app.request_forecast import request_forecast
-from weather_app.get_coordinates import get_coordinates
-from weather_app.classes import WeatherData, City
+from .request_forecast import request_forecast
+from .get_coordinates import get_coordinates
+from .classes import WeatherData, City
 
 
 WeatherForecast = tuple[datetime.time, float, float, float, float]

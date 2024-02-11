@@ -2,7 +2,7 @@ import sys
 
 import requests
 
-from weather_app.classes import ApiResponse
+from .classes import ApiResponse
 
 
 def request_forecast(latitude: float, longitude: float) -> ApiResponse:
