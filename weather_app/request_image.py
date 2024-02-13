@@ -8,6 +8,5 @@ def request_image(icon_id: str) -> ImageTk.PhotoImage:
     :param icon_id: The OpenWeatherMap icon id.
     :return: The image.
     """
-    print(icon_id)
     response = requests.get(f"https://openweathermap.org/img/wn/{icon_id}.png")
     return ImageTk.PhotoImage(data=response.content)
