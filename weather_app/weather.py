@@ -5,7 +5,7 @@ from .get_coordinates import get_coordinates
 from .classes import WeatherData, City
 
 
-WeatherForecast = tuple[datetime.time, float, float, float, float]
+WeatherForecast = tuple[str, datetime.time, float, float, float, float]
 
 
 def transform_forecasts(
@@ -22,6 +22,7 @@ def transform_forecasts(
         if date not in forecasts:
             forecasts[date] = []
         forecasts[date].append((
+            forecast.weather[0].icon,
             forecast.date_time.time(),
             forecast.main.temp,
             forecast.main.feels_like,

@@ -1,9 +1,24 @@
+import statistics
 from tkinter import ttk
 import datetime
 import tkinter
 
+from .request_image import request_image
 from .weather import WeatherForecast
 from .classes import City
+
+
+class WeatherIcon(tkinter.Label):
+    def __init__(self, master: tkinter.Misc, icon: str) -> None:
+        """Displays a weather icon.
+
+        :param master: The parent widget.
+        :param icon: The icon to display.
+        """
+        super().__init__(master)
+        self.icon = request_image(icon)
+        self.configure(image=self.icon)
+        self.image = self.icon
 
 
 # Class from https://stackoverflow.com/a/16198198
@@ -83,7 +98,7 @@ class DailyWeather(tkinter.Frame):
             )
 
         for row, weather in enumerate(weather_data, start=1):
-            for column, value in enumerate(weather):
+            for column, value in enumerate(weather[1:]):
                 tkinter.Label(self, text=value).grid(
                     row=row, column=column, padx=5, pady=2
                 )
@@ -106,9 +121,13 @@ class WeatherTable(tkinter.Frame):
         super().__init__(master)
 
         self.frame = VerticalScrolledFrame(self)
+        canvas = self.frame.interior
 
-        tkinter.Label(self.frame.interior, text=city.name + " Weather").pack()
+        tkinter.Label(canvas, text=city.name + " Weather").pack()
         for date, weather_data in forecasts.items():
-            tkinter.Label(self.frame.interior, text=date.strftime("%d %B %Y")).pack()
-            DailyWeather(self.frame.interior, weather_data).pack()
+            WeatherIcon(
+                canvas, statistics.mode(forecast[0] for forecast in weather_data)
+            ).pack()
+            tkinter.Label(canvas, text=date.strftime("%A %d %B %Y")).pack()
+            DailyWeather(canvas, weather_data).pack()
         self.frame.pack(fill='both', expand=True)
