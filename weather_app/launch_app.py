@@ -30,7 +30,7 @@ def launch_app() -> None:
     def go(location_name: str) -> None:
         starting_frame.destroy()
         city, weather_data = get_weather_data(location_name)
-        WeatherTable(root, city, weather_data).pack()
+        WeatherTable(root, city, weather_data).pack(fill='both', expand=False)
 
     ttk.Button(
         starting_frame,
