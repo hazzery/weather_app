@@ -1,8 +1,64 @@
+from tkinter import ttk
 import datetime
 import tkinter
 
 from .weather import WeatherForecast
 from .classes import City
+
+
+# Class from https://stackoverflow.com/a/16198198
+class VerticalScrolledFrame(ttk.Frame):
+    """A pure Tkinter scrollable frame that actually works!
+    * Use the 'interior' attribute to place widgets inside the scrollable frame.
+    * Construct and pack/place/grid normally.
+    * This frame only allows vertical scrolling.
+    """
+
+    def __init__(self, parent, *args, **kw):
+        ttk.Frame.__init__(self, parent, *args, **kw)
+
+        # Create a canvas object and a vertical scrollbar for scrolling it.
+        scrollbar = ttk.Scrollbar(self, orient='vertical')
+        scrollbar.pack(fill='y', side='right', expand=False)
+        canvas = tkinter.Canvas(
+            self, bd=0, highlightthickness=0, yscrollcommand=scrollbar.set
+        )
+        canvas.pack(side='left', fill='both', expand=True)
+        scrollbar.config(command=canvas.yview)
+
+        # Reset the view
+        canvas.xview_moveto(0)
+        canvas.yview_moveto(0)
+
+        # Create a frame inside the canvas which will be scrolled with it.
+        self.interior = interior = ttk.Frame(canvas)
+        interior_id = canvas.create_window(
+            0, 0, window=interior, anchor='nw'
+        )
+
+        # Track changes to the canvas and frame width and sync them,
+        # also updating the scrollbar.
+        def _configure_interior(_):
+            # Update the scrollbars to match the size of the inner frame.
+            width = interior.winfo_reqwidth()
+            height = interior.winfo_reqheight()
+            canvas.config(scrollregion=(0, 0, width, height))
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # Update the canvas's width to fit the inner frame.
+                canvas.config(width=interior.winfo_reqwidth())
+
+            if interior.winfo_reqheight() != canvas.winfo_height():
+                # Update the canvas's height to fit the inner frame.
+                canvas.config(height=interior.winfo_reqheight())
+
+        interior.bind('<Configure>', _configure_interior)
+
+        def _configure_canvas(_):
+            if interior.winfo_reqwidth() != canvas.winfo_width():
+                # Update the inner frame's width to fill the canvas.
+                canvas.itemconfigure(interior_id, width=canvas.winfo_width())
+
+        canvas.bind('<Configure>', _configure_canvas)
 
 
 class DailyWeather(tkinter.Frame):
@@ -43,7 +99,11 @@ class WeatherTable(tkinter.Frame):
         :param forecasts: The weather forecasts.
         """
         super().__init__(master)
-        tkinter.Label(self, text=city.name + " Weather").pack()
+
+        self.frame = VerticalScrolledFrame(self)
+
+        tkinter.Label(self.frame.interior, text=city.name + " Weather").pack()
         for date, weather_data in forecasts.items():
-            tkinter.Label(self, text=str(date)).pack()
-            DailyWeather(self, weather_data).pack()
+            tkinter.Label(self.frame.interior, text=str(date)).pack()
+            DailyWeather(self.frame.interior, weather_data).pack()
+        self.frame.pack(fill='both', expand=True)
