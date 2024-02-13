@@ -75,13 +75,18 @@ class DailyWeather(tkinter.Frame):
         :param weather_data: The weather data for the day.
         """
         super().__init__(master)
+        self.configure(borderwidth=1, relief="solid")
 
         for column, title in enumerate(self.weather_columns):
-            tkinter.Label(self, text=title).grid(row=0, column=column)
+            tkinter.Label(self, text=title).grid(
+                row=0, column=column, padx=5, pady=2
+            )
 
         for row, weather in enumerate(weather_data, start=1):
             for column, value in enumerate(weather):
-                tkinter.Label(self, text=value).grid(row=row, column=column)
+                tkinter.Label(self, text=value).grid(
+                    row=row, column=column, padx=5, pady=2
+                )
 
 
 class WeatherTable(tkinter.Frame):
