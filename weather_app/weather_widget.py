@@ -104,6 +104,6 @@ class WeatherTable(tkinter.Frame):
 
         tkinter.Label(self.frame.interior, text=city.name + " Weather").pack()
         for date, weather_data in forecasts.items():
-            tkinter.Label(self.frame.interior, text=str(date)).pack()
+            tkinter.Label(self.frame.interior, text=date.strftime("%d %B %Y")).pack()
             DailyWeather(self.frame.interior, weather_data).pack()
         self.frame.pack(fill='both', expand=True)
